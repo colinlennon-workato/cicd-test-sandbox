@@ -1,0 +1,16 @@
+{
+  "name": "Test XML API Recipe",
+  "method": "POST",
+  "path": "test-xml-api-recipe",
+  "legacy": false,
+  "recipe_id": {
+    "zip_name": "Sandbox/test_xml_api_recipe.recipe.json",
+    "name": "Test XML API Recipe",
+    "folder": "Sandbox"
+  },
+  "api_group_id": {
+    "zip_name": "sandbox.api_group.json",
+    "name": "Sandbox",
+    "folder": ""
+  }
+}
