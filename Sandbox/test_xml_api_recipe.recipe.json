@@ -1,0 +1,543 @@
+{
+  "name": "Test XML API Recipe",
+  "description": "",
+  "version": 3,
+  "private": true,
+  "concurrency": 1,
+  "code": {
+    "number": 0,
+    "provider": "workato_api_platform",
+    "name": "receive_request",
+    "as": "17deb02f",
+    "title": null,
+    "description": null,
+    "keyword": "trigger",
+    "dynamicPickListSelection": {
+      "request.content_type": "Text/XML",
+      "response.responses.0.http_status_code": "200 - OK"
+    },
+    "toggleCfg": {
+      "response.responses.0.http_status_code": true
+    },
+    "input": {
+      "request": {
+        "content_type": "raw"
+      },
+      "response": {
+        "content_type": "json",
+        "responses": [
+          {
+            "name": "Success",
+            "http_status_code": "200"
+          }
+        ]
+      }
+    },
+    "extended_output_schema": [
+      {
+        "label": "Context",
+        "name": "context",
+        "properties": [
+          {
+            "control_type": "text",
+            "label": "Calling IP address",
+            "optional": true,
+            "type": "string",
+            "name": "calling_ip"
+          },
+          {
+            "properties": [
+              {
+                "control_type": "integer",
+                "label": "Access profile ID",
+                "parse_output": "integer_conversion",
+                "optional": true,
+                "type": "integer",
+                "name": "id"
+              },
+              {
+                "control_type": "text",
+                "label": "Access profile name",
+                "optional": true,
+                "type": "string",
+                "name": "name"
+              },
+              {
+                "control_type": "text",
+                "label": "Access profile authentication type",
+                "optional": true,
+                "type": "string",
+                "name": "type"
+              }
+            ],
+            "label": "Access profile",
+            "type": "object",
+            "name": "access_profile"
+          },
+          {
+            "properties": [
+              {
+                "control_type": "text",
+                "label": "API client ID",
+                "optional": true,
+                "type": "string",
+                "name": "id"
+              },
+              {
+                "control_type": "text",
+                "label": "API client name",
+                "optional": true,
+                "type": "string",
+                "name": "name"
+              }
+            ],
+            "label": "API client",
+            "type": "object",
+            "name": "client"
+          },
+          {
+            "properties": [
+              {
+                "control_type": "integer",
+                "label": "Issued At",
+                "render_input": "date_time_conversion",
+                "parse_output": "date_time_conversion",
+                "optional": true,
+                "type": "date_time",
+                "name": "iat"
+              },
+              {
+                "control_type": "integer",
+                "label": "Not Before",
+                "render_input": "date_time_conversion",
+                "parse_output": "date_time_conversion",
+                "optional": true,
+                "type": "date_time",
+                "name": "nbf"
+              },
+              {
+                "control_type": "integer",
+                "label": "Expiration Time",
+                "render_input": "date_time_conversion",
+                "parse_output": "date_time_conversion",
+                "optional": true,
+                "type": "date_time",
+                "name": "exp"
+              },
+              {
+                "control_type": "text",
+                "label": "Audience",
+                "optional": true,
+                "type": "string",
+                "name": "aud"
+              },
+              {
+                "control_type": "text",
+                "label": "JWT ID",
+                "optional": true,
+                "type": "string",
+                "name": "jti"
+              },
+              {
+                "control_type": "text",
+                "label": "Issuer",
+                "optional": true,
+                "type": "string",
+                "name": "iss"
+              }
+            ],
+            "label": "JWT claims",
+            "type": "object",
+            "name": "jwt_payload"
+          }
+        ],
+        "type": "object"
+      },
+      {
+        "label": "Request",
+        "name": "request",
+        "properties": [
+          {
+            "control_type": "text",
+            "label": "Content type",
+            "optional": false,
+            "type": "string",
+            "name": "content_type"
+          },
+          {
+            "control_type": "text_area",
+            "label": "Request body",
+            "optional": false,
+            "type": "string",
+            "name": "body"
+          },
+          {
+            "properties": [
+
+            ],
+            "label": "Parameters",
+            "optional": false,
+            "type": "object",
+            "name": "parameters"
+          }
+        ],
+        "type": "object"
+      }
+    ],
+    "block": [
+      {
+        "number": 1,
+        "provider": "xml_parser",
+        "name": "parse_xml",
+        "as": "bd8738a9",
+        "title": null,
+        "description": null,
+        "keyword": "action",
+        "input": {
+          "type": "xml",
+          "sample_document": "<wd:Report_Data xmlns:wd=\"urn:com.workday.report/CR-INT005-PSG_Contracts\">\n\t<wd:Report_Entry>\n\t\t<wd:Employee_ID>xxxxxx</wd:Employee_ID>\n\t\t<wd:Prefix>Monsieur</wd:Prefix>\n\t\t<wd:First_Name>Michael</wd:First_Name>\n\t\t<wd:Last_Name>Jackson</wd:Last_Name>\n\t\t<wd:Work_Email>mjackson@psg.fr</wd:Work_Email>\n\t\t<wd:Job_Requisition wd:Descriptor=\"009615 Intendant (H/F) (Filled)\">\n\t\t\t<wd:ID wd:type=\"WID\">26ba4f49b4011000b027b2a1568a0000</wd:ID>\n\t\t\t<wd:ID wd:type=\"Job_Requisition_ID\">009615</wd:ID>\n\t\t</wd:Job_Requisition>\n\t\t<wd:Job_Requisition_Reference_ID>\n\t\t\t<wd:Reference_ID>009615</wd:Reference_ID>\n\t\t\t<wd:Event_Name wd:Descriptor=\"Job Requisition: 009615 Intendant (H/F)\">\n\t\t\t\t<wd:ID wd:type=\"WID\">26ba4f49b4011000af63c0de64e40000</wd:ID>\n\t\t\t</wd:Event_Name>\n\t\t\t<wd:Event_Name wd:Descriptor=\"Job Requisition Change: 009615 Intendant (H/F)\">\n\t\t\t\t<wd:ID wd:type=\"WID\">26ba4f49b4011000fe0e0613ef180000</wd:ID>\n\t\t\t</wd:Event_Name>\n\t\t</wd:Job_Requisition_Reference_ID>\n\t\t<wd:Company_Name>Paris Saint-Germain Football</wd:Company_Name>\n\t\t<wd:Company_Address wd:Descriptor=\"24 Rue du Commandant Guilbaud\">\n\t\t\t<wd:ID wd:type=\"WID\">be102c281f3110f2209b77532944aada</wd:ID>\n\t\t</wd:Company_Address>\n\t\t<wd:Company_Code>382357721</wd:Company_Code>\n\t\t<wd:Company_Owner wd:Descriptor=\"Michael Jordan\">\n\t\t\t<wd:ID wd:type=\"WID\">0c5e6f7b663b10f39e2e05fa389b6020</wd:ID>\n\t\t\t<wd:ID wd:type=\"Employee_ID\">xxxxxx</wd:ID>\n\t\t</wd:Company_Owner>\n\t\t<wd:Hire_Date>2007-11-05-08:00</wd:Hire_Date>\n\t\t<wd:Contract_Start_Date>2024-07-01-07:00</wd:Contract_Start_Date>\n\t\t<wd:Contract_End_date>2025-01-31-08:00</wd:Contract_End_date>\n\t\t<wd:Number_of_Hours_Contract>5137</wd:Number_of_Hours_Contract>\n\t\t<wd:Job_Profile wd:Descriptor=\"Responsable Juridique\">\n\t\t\t<wd:ID wd:type=\"WID\">81017db85b9f01b032d332193229961b</wd:ID>\n\t\t\t<wd:ID wd:type=\"Job_Profile_ID\">644</wd:ID>\n\t\t</wd:Job_Profile>\n\t\t<wd:LocationName>La Factory</wd:LocationName>\n\t\t<wd:Event_Location>La Factory, 53 Avenue Emile Zola, 92100, BOULOGNE BILLANCOURT</wd:Event_Location>\n\t\t<wd:Address_line1>BD DU MARECHAL DE LATTRE DE TASSIGNY</wd:Address_line1>\n\t\t<wd:Postal_Code>92150</wd:Postal_Code>\n\t\t<wd:City>SURESNES</wd:City>\n\t\t<wd:TotalBasePayHourlyAmount>0</wd:TotalBasePayHourlyAmount>\n\t\t<wd:Comp_Plan_Amount>0</wd:Comp_Plan_Amount>\n\t\t<wd:Folder_name>_</wd:Folder_name>\n\t\t<wd:Worker>CR-INT005-PSG-Contracts - Copy\n\t\t\t<wd:bonusOnTarget>5500</wd:bonusOnTarget>\n\t\t</wd:Worker>\n\t\t<wd:Org_Manager>Monsieur Michael Jackson</wd:Org_Manager>\n\t\t<wd:nbre1>214</wd:nbre1>\n\t\t<wd:Contract_Document_Base64_Encoded>x</wd:Contract_Document_Base64_Encoded>\n\t</wd:Report_Entry>\n</wd:Report_Data>",
+          "document": "#{_dp('{\"pill_type\":\"output\",\"provider\":\"workato_api_platform\",\"line\":\"17deb02f\",\"path\":[\"request\",\"body\"]}')}"
+        },
+        "extended_output_schema": [
+          {
+            "label": "Report data",
+            "name": "Report_Data",
+            "properties": [
+              {
+                "control_type": "text",
+                "label": "Xmlns:wd",
+                "type": "string",
+                "name": "xmlns:wd"
+              },
+              {
+                "properties": [
+                  {
+                    "control_type": "text",
+                    "label": "Employee ID",
+                    "type": "string",
+                    "name": "Employee_ID"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Prefix",
+                    "type": "string",
+                    "name": "Prefix"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "First name",
+                    "type": "string",
+                    "name": "First_Name"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Last name",
+                    "type": "string",
+                    "name": "Last_Name"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Work email",
+                    "type": "string",
+                    "name": "Work_Email"
+                  },
+                  {
+                    "properties": [
+                      {
+                        "control_type": "text",
+                        "label": "Wd: descriptor",
+                        "type": "string",
+                        "name": "wd:Descriptor"
+                      },
+                      {
+                        "name": "ID",
+                        "type": "array",
+                        "of": "string",
+                        "control_type": "text",
+                        "label": "ID",
+                        "parse_output": "item_array_wrap"
+                      }
+                    ],
+                    "label": "Job requisition",
+                    "type": "object",
+                    "name": "Job_Requisition"
+                  },
+                  {
+                    "properties": [
+                      {
+                        "control_type": "text",
+                        "label": "Reference ID",
+                        "type": "string",
+                        "name": "Reference_ID"
+                      },
+                      {
+                        "name": "Event_Name",
+                        "type": "array",
+                        "of": "object",
+                        "label": "Event name",
+                        "properties": [
+                          {
+                            "control_type": "text",
+                            "label": "Wd: descriptor",
+                            "type": "string",
+                            "name": "wd:Descriptor"
+                          },
+                          {
+                            "control_type": "text",
+                            "label": "ID",
+                            "type": "string",
+                            "name": "ID"
+                          }
+                        ],
+                        "parse_output": "item_array_wrap"
+                      }
+                    ],
+                    "label": "Job requisition reference ID",
+                    "type": "object",
+                    "name": "Job_Requisition_Reference_ID"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Company name",
+                    "type": "string",
+                    "name": "Company_Name"
+                  },
+                  {
+                    "properties": [
+                      {
+                        "control_type": "text",
+                        "label": "Wd: descriptor",
+                        "type": "string",
+                        "name": "wd:Descriptor"
+                      },
+                      {
+                        "control_type": "text",
+                        "label": "ID",
+                        "type": "string",
+                        "name": "ID"
+                      }
+                    ],
+                    "label": "Company address",
+                    "type": "object",
+                    "name": "Company_Address"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Company code",
+                    "type": "string",
+                    "name": "Company_Code"
+                  },
+                  {
+                    "properties": [
+                      {
+                        "control_type": "text",
+                        "label": "Wd: descriptor",
+                        "type": "string",
+                        "name": "wd:Descriptor"
+                      },
+                      {
+                        "name": "ID",
+                        "type": "array",
+                        "of": "string",
+                        "control_type": "text",
+                        "label": "ID",
+                        "parse_output": "item_array_wrap"
+                      }
+                    ],
+                    "label": "Company owner",
+                    "type": "object",
+                    "name": "Company_Owner"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Hire date",
+                    "type": "string",
+                    "name": "Hire_Date"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Contract start date",
+                    "type": "string",
+                    "name": "Contract_Start_Date"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Contract end date",
+                    "type": "string",
+                    "name": "Contract_End_date"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Number of hours contract",
+                    "type": "string",
+                    "name": "Number_of_Hours_Contract"
+                  },
+                  {
+                    "properties": [
+                      {
+                        "control_type": "text",
+                        "label": "Wd: descriptor",
+                        "type": "string",
+                        "name": "wd:Descriptor"
+                      },
+                      {
+                        "name": "ID",
+                        "type": "array",
+                        "of": "string",
+                        "control_type": "text",
+                        "label": "ID",
+                        "parse_output": "item_array_wrap"
+                      }
+                    ],
+                    "label": "Job profile",
+                    "type": "object",
+                    "name": "Job_Profile"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Location name",
+                    "type": "string",
+                    "name": "LocationName"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Event location",
+                    "type": "string",
+                    "name": "Event_Location"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Address line 1",
+                    "type": "string",
+                    "name": "Address_line1"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Postal code",
+                    "type": "string",
+                    "name": "Postal_Code"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "City",
+                    "type": "string",
+                    "name": "City"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Total base pay hourly amount",
+                    "type": "string",
+                    "name": "TotalBasePayHourlyAmount"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Comp plan amount",
+                    "type": "string",
+                    "name": "Comp_Plan_Amount"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Folder name",
+                    "type": "string",
+                    "name": "Folder_name"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Worker",
+                    "type": "string",
+                    "name": "Worker"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Org manager",
+                    "type": "string",
+                    "name": "Org_Manager"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Nbre 1",
+                    "type": "string",
+                    "name": "nbre1"
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Contract document base 64 encoded",
+                    "type": "string",
+                    "name": "Contract_Document_Base64_Encoded"
+                  }
+                ],
+                "label": "Report entry",
+                "type": "object",
+                "name": "Report_Entry"
+              }
+            ],
+            "type": "object"
+          }
+        ],
+        "uuid": "60504457-a4d7-4a0f-830a-a31091cdf36d"
+      },
+      {
+        "number": 2,
+        "provider": "workato_api_platform",
+        "name": "return_response",
+        "as": "2e29015e",
+        "title": null,
+        "description": "<span class=\"step-statement step-statement_return-variant\">Return</span><span class=\"provider\">Success</span>",
+        "keyword": "action",
+        "input": {
+          "http_status_code": "200"
+        },
+        "extended_output_schema": [
+          {
+            "change_on_blur": true,
+            "control_type": "select",
+            "extends_schema": true,
+            "label": "Response",
+            "name": "http_status_code",
+            "pick_list": [
+              [
+                "Success",
+                "200"
+              ]
+            ],
+            "type": "string"
+          }
+        ],
+        "extended_input_schema": [
+          {
+            "change_on_blur": true,
+            "control_type": "select",
+            "extends_schema": true,
+            "label": "Response",
+            "name": "http_status_code",
+            "pick_list": [
+              [
+                "Success",
+                "200"
+              ]
+            ],
+            "type": "string"
+          }
+        ],
+        "uuid": "2c6525dd-c629-4899-a377-df07b22861e3"
+      }
+    ],
+    "comment": "Define the request and response parameters for this API endpoint",
+    "uuid": "9102c30a-6728-4020-948e-a617c92452e4",
+    "unfinished": false
+  },
+  "config": [
+    {
+      "keyword": "application",
+      "provider": "workato_api_platform",
+      "skip_validation": false,
+      "account_id": null
+    },
+    {
+      "keyword": "application",
+      "provider": "xml_parser",
+      "skip_validation": false,
+      "account_id": null
+    }
+  ]
+}
